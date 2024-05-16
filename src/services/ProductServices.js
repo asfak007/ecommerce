@@ -1,6 +1,7 @@
-import BrandModel from "../models/BrandModel";
-import CategoryModel from "../models/CategoryModel";
-import SliderModel from "../models/ProductSliderModel";
+const BrandModel = require("../models/BrandModel");
+const CategoryModel = require("../models/CategoryModel");
+const SliderModel = require("../models/ProductSliderModel");
+
 
 
 const BrandListService= async ()=>{
