@@ -1,7 +1,7 @@
 const req = require("express/lib/request");
 const Services = require("../services/ProductServices");
 
-const {ListByService, CategoryListService, SliderListService} = require("../services/ProductServices");
+const {ListByService, CategoryListService, SliderListService, ListByCategoryService} = require("../services/ProductServices");
 
 
 exports.ProductBrandList=async (req, res) => {
@@ -29,7 +29,8 @@ exports.ProductListByFilter = async (req,res) =>{
 }
 
 exports.ProductListByCategory=async (req, res) => {
-
+    let result = await ListByCategoryService(req)
+    return res.status(200).json(result);
 }
 
 exports.ProductDetails= async (req, res) => {
