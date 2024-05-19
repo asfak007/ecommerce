@@ -47,7 +47,6 @@ const SliderListService= async ()=>{
 const  ListByService= async (req)=>{
     let brandID= new  mongoose.Types.ObjectId(req.params.BrandID);
 
-    console.log(brandID);
     let MatchStage={$match:{brandID:brandID}};
     let joinWithBrandStage={$lookup:{from:"brands",localField:"brandID",foreignField:"_id",as:"brand"}};
     let JoinWithCategoryStage={$lookup: {from:"categories",localField:"categoryID",foreignField:"_id",as:"category"}};
@@ -57,14 +56,15 @@ const  ListByService= async (req)=>{
     let UnwindBrandStage={$unwind:"$brand"};
 
     // projection is remove which data is unwanted.
-    // let projection
+    let projectionStage = {$project: {'brand._id': 0,'brand.updatedAt':0,'brand.createdAt':0,'category._id':0,'category.updatedAt':0,'category.createdAt':0,'createdAt':0,'updatedAt':0,},}
 
     let data = await ProductModel.aggregate([
         MatchStage,
         joinWithBrandStage,
         JoinWithCategoryStage,
         UnwindCategoryStage,
-        UnwindBrandStage
+        UnwindBrandStage,
+        projectionStage
         ])
     return {status:"success",data:data};
 }
