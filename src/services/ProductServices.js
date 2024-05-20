@@ -108,8 +108,24 @@ const ListByCategoryService= async (req)=>{
 
 const ListByRemarkService= async (req)=>{
     try {
-        let Remark = req.params.remark;
-        return {status:"success",data:Remark.toString()}
+        let Remark = req.params.Remark;
+        let MatchStage = {$match:{remark:Remark}};
+        let JoinWithBrandStage = {$lookup:{from:"brands",localField:"brandID",foreignField:"_id",as:"brand"}};
+        let JoinWithCategoryStage = {$lookup:{from:"categories",localField:"categoryID",foreignField:"_id",as:"category"}};
+        let UnwindBrandStage = {$unwind:"$brand"}
+        let UnWindCategoryStage = {$unwind:"$category"};
+
+        let ProjctionStage ={$project:{'createdAt':0,'updatedAt':0,'brand._id':0,'brand.updatedAt':0,'brand.createdAt':0,'category._id':0,'category.createdAt':0,'category.updatedAt':0}}
+
+        let data = await ProductModel.aggregate([
+            MatchStage,
+            JoinWithBrandStage,
+            UnwindBrandStage,
+            JoinWithCategoryStage,
+            UnWindCategoryStage,
+            ProjctionStage
+        ])
+        return {status:"success",data:data}
     }catch (e) {
         return {status:"fail",data:e}.toString()
     }
