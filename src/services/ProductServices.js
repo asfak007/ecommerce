@@ -79,21 +79,23 @@ const  ListByService= async (req)=>{
 
 const ListByCategoryService= async (req)=>{
     try{
-        let CategoryId = new ObjectID(req.params.CategoryID)
+        let CategoryId = new ObjectID(req.params.CategoryID);
 
-        console.log(CategoryId.toString())
-
-        let MatchStage = {$match: {categoryID:CategoryId}}
-        let JoinWithBrandStage = {$lookup: {from:"brands",localField:"brandID",foreignField:"_id",as:"brand"}}
+        let MatchStage = {$match: {categoryID:CategoryId}};
+        let JoinWithBrandStage = {$lookup: {from:"brands",localField:"brandID",foreignField:"_id",as:"brand"}};
         let JoinWithCategoryStage = {$lookup:{from:"categories",localField:"categoryID",foreignField:"_id",as:"category"}};
-        let UnwindBrandStage = {$unwind:"$brand"}
-        let UnwindCategoryStage = {$unwind:"$category"}
+        let UnwindBrandStage = {$unwind:"$brand"};
+        let UnwindCategoryStage = {$unwind:"$category"};
+
+        let ProjectionStage = {$project:{'createdAt':0,'updatedAt':0,'brand._id':0,'brand.updatedAt':0,'brand.createdAt':0,'category._id':0,'category.createdAt':0,'category.updatedAt':0}};
+
         let data = await ProductModel.aggregate([
             MatchStage,
             JoinWithBrandStage,
             JoinWithCategoryStage,
             UnwindBrandStage,
-            UnwindCategoryStage
+            UnwindCategoryStage,
+            ProjectionStage
             
         ])
 
@@ -104,4 +106,13 @@ const ListByCategoryService= async (req)=>{
     }
 }
 
-module.exports = {BrandListService,CategoryListService,SliderListService,ListByService,ListByCategoryService};
+const ListByRemarkService= async (req)=>{
+    try {
+        let Remark = req.params.remark;
+        return {status:"success",data:Remark.toString()}
+    }catch (e) {
+        return {status:"fail",data:e}.toString()
+    }
+}
+
+module.exports = {BrandListService,CategoryListService,SliderListService,ListByService,ListByCategoryService,ListByRemarkService};
