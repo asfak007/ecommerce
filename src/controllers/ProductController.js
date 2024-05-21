@@ -2,7 +2,7 @@ const req = require("express/lib/request");
 const Services = require("../services/ProductServices");
 
 const {ListByService, CategoryListService, SliderListService, ListByCategoryService, ListByRemarkService,
-    ListBySmilierService, ProductDetailService
+    ListBySmilierService, ProductDetailService, ListByKeywordService
 } = require("../services/ProductServices");
 
 
@@ -52,7 +52,7 @@ exports.ProductListBySmilier= async (req,res)=>{
 }
 
 exports.ProductListByKeyword= async (req,res)=>{
-
+       let result = await ListByKeywordService(req)
 }
 
 
