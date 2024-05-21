@@ -205,7 +205,7 @@ const ProductDetailService= async (req)=>{
 
         try{
 
-            let SearchRegex = {"$regex":req.params.keyword,"$option":"i"}
+            let SearchRegex = {"$regex":req.params.keyword,"$options":"i"}
             let SearchParams = [{title:SearchRegex},{shortDes:SearchRegex}];
             let SearchQuery = {"$or":SearchParams};
 
@@ -219,19 +219,27 @@ const ProductDetailService= async (req)=>{
             let UnwindBrandStage = {$unwind:"$brand"}
             let UnWindProductDetailsStage = {$unwind:"$productDetails"};
 
+            let ProjectionStage = {$project:{'createdAt':0,'updatedAt':0,'brand._id':0,'brand.updatedAt':0,'brand.createdAt':0,'category._id':0,'category.createdAt':0,'category.updatedAt':0}};
+
+
             let data = await ProductModel.aggregate([
                 MatchStage,
                 JoinWithCategoryStage,
-
-
+                joinWithBrandStage,
+                UnWindCategoryStage,
+                UnwindBrandStage,
+                UnWindProductDetailsStage,
+                ProjectionStage
             ])
+
+            return {status:"success",data:data};
 
 
         }catch (e) {
             return {status:"fail",data:e}.toString()
         }
 
-        let SearchRegex={"$regex":req.params.keyword}
+
     }
 
 
