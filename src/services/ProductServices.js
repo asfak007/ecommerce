@@ -131,4 +131,36 @@ const ListByRemarkService= async (req)=>{
     }
 }
 
-module.exports = {BrandListService,CategoryListService,SliderListService,ListByService,ListByCategoryService,ListByRemarkService};
+const ListBySmilierService = async (req)=>{
+    try{
+        let CategoryId = new ObjectID(req.params.CategoryID);
+        let MatchStage = {$match: {categoryID:CategoryId}};
+
+        let limit = {$limit:20}
+
+        let JoinWithBrandStage = {$lookup: {from:"brands",localField:"brandID",foreignField:"_id",as:"brand"}};
+        let JoinWithCategoryStage = {$lookup:{from:"categories",localField:"categoryID",foreignField:"_id",as:"category"}};
+        let UnwindBrandStage = {$unwind:"$brand"};
+        let UnwindCategoryStage = {$unwind:"$category"};
+
+        let ProjectionStage = {$project:{'createdAt':0,'updatedAt':0,'brand._id':0,'brand.updatedAt':0,'brand.createdAt':0,'category._id':0,'category.createdAt':0,'category.updatedAt':0}};
+
+        let data = await ProductModel.aggregate([
+            MatchStage,
+            JoinWithBrandStage,
+            JoinWithCategoryStage,
+            UnwindBrandStage,
+            UnwindCategoryStage,
+            ProjectionStage,
+            limit
+
+        ])
+
+        return {status:"success",data:data};
+
+    }catch(err){
+        return {status:"fail",data:err}.toString()
+    }
+}
+
+module.exports = {BrandListService,CategoryListService,SliderListService,ListByService,ListByCategoryService,ListByRemarkService,ListBySmilierService};
